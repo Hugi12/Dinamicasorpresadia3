@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Día 3 — Nuestro Juego</title>
+  <style>
+    :root{
+      --bg1:#0f1021;
+      --bg2:#2b2d42;
+      --accent:#ff477e;
+      --text:#1f2937;
+      --muted:#6b7280;
+      --ok:#065f46;
+      --error:#b91c1c;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;
+      background:radial-gradient(1200px 600px at 20% 0%,var(--bg2),transparent),
+                 radial-gradient(1200px 700px at 100% 0%,#1f2937,transparent),
+                 linear-gradient(135deg,var(--bg1),#1a1b2e 60%);
+      color:var(--text);
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      min-height:100vh;
+      padding:24px;
+      overflow-y:auto;
+      -webkit-overflow-scrolling:touch;
+    }
+    .card{
+      width:100%;max-width:720px;background:linear-gradient(180deg,#fff,#f9fafb 60%,#fff);
+      border-radius:20px;padding:22px;
+      box-shadow:0 10px 25px rgba(0,0,0,.12),0 2px 8px rgba(0,0,0,.06);
+      position:relative;overflow:hidden;
+      transition:opacity .6s ease,transform .6s ease;
+    }
+    .hidden{opacity:0;transform:scale(.96);pointer-events:none;position:absolute;inset:0;}
+    .show{opacity:1;transform:scale(1);pointer-events:auto;position:relative;}
+    h1{font-size:clamp(26px,4.8vw,36px);color:#111827;margin-bottom:8px}
+    p{line-height:1.6;margin-bottom:12px}
+    button{
+      appearance:none;border:0;border-radius:12px;padding:14px 18px;font-weight:800;
+      background:linear-gradient(90deg,var(--accent),#ff6b9a);color:#fff;
+      box-shadow:0 8px 16px rgba(255,71,126,.35);cursor:pointer;
+      width:100%;margin-top:16px;font-size:16px;transition:transform .1s ease;
+    }
+    button:active{transform:scale(.98)}
+    .options{display:grid;gap:10px;margin-top:10px}
+    input[type=radio]{display:none}
+    .opt{display:flex;align-items:center;gap:10px;background:#fff;border:1px solid #d1d5db;
+         border-radius:14px;padding:14px;cursor:pointer;transition:border-color .2s,box-shadow .2s}
+    .opt .dot{width:18px;height:18px;border-radius:50%;border:2px solid #9ca3af;position:relative}
+    input[type=radio]:checked + label .opt{border-color:#f472b6;box-shadow:0 0 0 6px rgba(244,114,182,.15)}
+    input[type=radio]:checked + label .dot{border-color:#f472b6}
+    input[type=radio]:checked + label .dot::after{content:'';position:absolute;inset:3px;
+      background:linear-gradient(90deg,var(--accent),#ff6b9a);border-radius:50%}
+    .result,.error{display:none;margin-top:14px;border-radius:16px;padding:16px;text-align:center}
+    .result{border:1px solid #d1fae5;background:#ecfdf5;color:var(--ok)}
+    .error{border:1px solid #fecaca;background:#fef2f2;color:var(--error)}
+    .big{font-size:clamp(42px,10vw,72px);font-weight:900;line-height:1;margin-top:10px}
+    .img-section img{width:100%;border-radius:16px;margin-bottom:14px;box-shadow:0 4px 14px rgba(0,0,0,.15);}
+  </style>
+</head>
+<body>
+
+  <!-- 1️⃣ Pantalla de bienvenida -->
+  <main class="card show" id="intro">
+    <h1>Hola, mi amor 💖</h1>
+    <p>Hoy seguimos con nuestro juego, pero este será un poquito más especial 🌸</p>
+    <p>Prepárate para completar algunas frases que solo tú puedes entender, porque están hechas con pedacitos de nosotros 💌</p>
+    <button onclick="goToQuiz()">Comenzar 💘</button>
+  </main>
+
+  <!-- 2️⃣ Pantalla de dinámica -->
+  <main class="card hidden" id="quiz">
+    <h1>Día 3 — Completa la frase 💭</h1>
+    <p class="subtitle" style="color:var(--muted)">Elige la palabra que complete mejor lo que siento por ti 💞</p>
+
+    <form id="quizForm">
+      <label><strong>1️⃣ Mi lugar favorito del mundo es ___ contigo.</strong></label>
+      <div class="options">
+        <input type="radio" name="q1" id="q1a"><label for="q1a"><div class="opt"><span class="dot"></span>La playa</div></label>
+        <input type="radio" name="q1" id="q1b"><label for="q1b"><div class="opt"><span class="dot"></span>Mi cama</div></label>
+        <input type="radio" name="q1" id="q1c" data-correct><label for="q1c"><div class="opt"><span class="dot"></span>Cualquier lugar</div></label>
+      </div>
+
+      <label><strong>2️⃣ Cuando pienso en ti, siempre me acuerdo de tu ___.</strong></label>
+      <div class="options">
+        <input type="radio" name="q2" id="q2a" data-correct><label for="q2a"><div class="opt"><span class="dot"></span>Risa</div></label>
+        <input type="radio" name="q2" id="q2b"><label for="q2b"><div class="opt"><span class="dot"></span>Perfume</div></label>
+        <input type="radio" name="q2" id="q2c"><label for="q2c"><div class="opt"><span class="dot"></span>Cabello</div></label>
+      </div>
+
+      <label><strong>3️⃣ Nuestro amor se siente como un ___.</strong></label>
+      <div class="options">
+        <input type="radio" name="q3" id="q3a"><label for="q3a"><div class="opt"><span class="dot"></span>Viaje eterno</div></label>
+        <input type="radio" name="q3" id="q3b"><label for="q3b"><div class="opt"><span class="dot"></span>Abrazo largo</div></label>
+        <input type="radio" name="q3" id="q3c" data-correct><label for="q3c"><div class="opt"><span class="dot"></span>Domingo sin fin</div></label>
+      </div>
+
+      <label><strong>4️⃣ Si tuviera que describirte en una palabra sería ___.</strong></label>
+      <div class="options">
+        <input type="radio" name="q4" id="q4a"><label for="q4a"><div class="opt"><span class="dot"></span>Perfecta</div></label>
+        <input type="radio" name="q4" id="q4b" data-correct><label for="q4b"><div class="opt"><span class="dot"></span>Mía</div></label>
+        <input type="radio" name="q4" id="q4c"><label for="q4c"><div class="opt"><span class="dot"></span>Increíble</div></label>
+      </div>
+
+      <label><strong>5️⃣ Eres la razón por la que sonrío sin ___.</strong></label>
+      <div class="options">
+        <input type="radio" name="q5" id="q5a" data-correct><label for="q5a"><div class="opt"><span class="dot"></span>motivo alguno</div></label>
+        <input type="radio" name="q5" id="q5b"><label for="q5b"><div class="opt"><span class="dot"></span>Parar</div></label>
+        <input type="radio" name="q5" id="q5c"><label for="q5c"><div class="opt"><span class="dot"></span>Control</div></label>
+      </div>
+
+      <label><strong>6️⃣ Cuando te abrazo, siento que el mundo se ___.</strong></label>
+      <div class="options">
+        <input type="radio" name="q6" id="q6a"><label for="q6a"><div class="opt"><span class="dot"></span>Ilumina</div></label>
+        <input type="radio" name="q6" id="q6b" data-correct><label for="q6b"><div class="opt"><span class="dot"></span>Detiene</div></label>
+        <input type="radio" name="q6" id="q6c"><label for="q6c"><div class="opt"><span class="dot"></span>Acelera</div></label>
+      </div>
+
+      <button type="button" onclick="checkQuiz()">Comprobar 💞</button>
+      <div id="quizError" class="error">Ponte buza 😝 o te agarro a besos eh, revisa tus respuestas.</div>
+    </form>
+  </main>
+
+  <!-- 3️⃣ Pantalla con la foto -->
+  <main class="card hidden" id="photo">
+    <div class="img-section">
+      <img src="https://i.imgur.com/yhuUTzi.jpeg" alt="Nosotros 💕">
+    </div>
+    <h1>💞 Tú y yo</h1>
+    <p>Y es que todo esto tiene sentido solo porque te tengo a ti 💘  
+    Cada momento contigo se siente como un pedacito de eternidad.</p>
+    <button onclick="goToFinal()">Continuar 🌙</button>
+  </main>
+
+  <!-- 4️⃣ Pantalla final -->
+  <main class="card hidden" id="final">
+    <h1>💌 Amor mío</h1>
+    <p>Tu número del día es:</p>
+    <div class="big">9</div>
+    <p style="margin-top:18px;">
+      Aparta el día de mañana… quiero comer contigo, abrazarte un rato,  
+      y seguir recordándote que te amo más de lo que imaginas 💞  
+      Gracias por participar conmigo estos días, amor mío 🌷
+    </p>
+    <button onclick="goToIntro()">Volver a leer 💌</button>
+  </main>
+
+  <script>
+    const intro=document.getElementById('intro');
+    const quiz=document.getElementById('quiz');
+    const photo=document.getElementById('photo');
+    const final=document.getElementById('final');
+
+    function goToQuiz(){
+      intro.classList.replace('show','hidden');
+      setTimeout(()=>quiz.classList.replace('hidden','show'),300);
+      window.scrollTo(0,0);
+    }
+    function checkQuiz(){
+      const correct=document.querySelectorAll('[data-correct]');
+      let allCorrect=true;
+      correct.forEach(c=>{
+        const group=c.name;
+        if(!document.querySelector('input[name="'+group+'"][data-correct]:checked')){
+          allCorrect=false;
+        }
+      });
+      if(allCorrect){
+        quiz.classList.replace('show','hidden');
+        setTimeout(()=>photo.classList.replace('hidden','show'),300);
+        window.scrollTo(0,0);
+      }else{
+        document.getElementById('quizError').style.display='block';
+        window.scrollTo(0,document.body.scrollHeight);
+      }
+    }
+    function goToFinal(){
+      photo.classList.replace('show','hidden');
+      setTimeout(()=>final.classList.replace('hidden','show'),300);
+      window.scrollTo(0,0);
+    }
+    function goToIntro(){
+      final.classList.replace('show','hidden');
+      setTimeout(()=>intro.classList.replace('hidden','show'),300);
+      window.scrollTo(0,0);
+    }
+  </script>
+</body>
+</html>
